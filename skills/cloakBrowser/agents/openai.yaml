@@ -1,0 +1,4 @@
+interface:
+  display_name: "cloakBrowser"
+  short_description: "Run stealth browser automation with CloakBrowser"
+  default_prompt: "Use $cloakBrowser to automate a protected site with CloakBrowser and return structured results."

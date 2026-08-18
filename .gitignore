@@ -1,0 +1,20 @@
+# Skill runtime state and browser profiles
+**/.state/
+
+# Virtual environments
+**/.venv/
+**/venv/
+
+# Python caches and compiled files
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Runtime artifacts and caches
+**/.cache/
+**/work/
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db

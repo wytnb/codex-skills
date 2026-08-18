@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bilibili 访谈转 Markdown"
+  short_description: "将 Bilibili 访谈整理为带章节和说话人的 Markdown 文字稿"
+  default_prompt: "Use $bilibili-interview-to-markdown to turn this Bilibili interview into a polished Markdown transcript."
