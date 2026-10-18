@@ -64,7 +64,7 @@ function reconcile(dir,now=Date.now()){
  write(path.join(dir,'progress.json'),compact(state));writeReport(dir,state,summary);
  return compact(state);
 }
-function compact(state){return {taskId:state.taskId,status:state.status,revision:state.revisions,selectedPoints:state.geographicReview.length,expected:state.expectedJobs.length,valid:state.summary?.validRows||0,missing:state.summary?.missingRows||0,pending:state.configs.reduce((n,c)=>{const b=Object.values(state.bindings).find(b=>b.configFingerprint===c.configFingerprint);return n+Math.max(0,jobsFor(c).length-(b?.cursor||0));},0),shards:state.configs.length,laterSlots:state.deferred?.filter(d=>d.reason.startsWith('beyond-')).length||0,expired:state.expired?.length||0,geoUnresolved:state.unresolved?.length||0,metrics:state.metrics};}
+function compact(state){return {taskId:state.taskId,status:state.status,coverageBoundary:'submitted-run-only',recommendation:state.request.recommendation||null,revision:state.revisions,selectedPoints:state.geographicReview.length,expected:state.expectedJobs.length,valid:state.summary?.validRows||0,missing:state.summary?.missingRows||0,pending:state.configs.reduce((n,c)=>{const b=Object.values(state.bindings).find(b=>b.configFingerprint===c.configFingerprint);return n+Math.max(0,jobsFor(c).length-(b?.cursor||0));},0),shards:state.configs.length,laterSlots:state.deferred?.filter(d=>d.reason.startsWith('beyond-')).length||0,expired:state.expired?.length||0,geoUnresolved:state.unresolved?.length||0,metrics:state.metrics};}
 function bind(dir,pageId,shardId){
  const state=load(dir),config=state.configs.find(c=>c.shardId===shardId);if(!config)throw new Error('No pending shard '+shardId);
  const old=state.bindings[pageId];
@@ -123,7 +123,7 @@ function recoverReceipts(dir){
 function writeReport(dir,state,summary){
  const atlas=checkedAtlas(dir,state),points=new Map(atlas.points.map(p=>[p.id,p])),names=new Map(atlas.points.map(p=>[p.destinationId,p.destination||p.destinationId]));
  const checked=summary.valid.map(r=>instant(r.checkedAt));
- const lines=['# Windy 查询汇总','',`任务 ${state.taskId}；状态 ${state.status}。有效读数 ${summary.summary.validRows}，计划缺口 ${summary.missing.length}。`,checked.length?`实际读取时间（UTC）：${new Date(Math.min(...checked)).toISOString()} 至 ${new Date(Math.max(...checked)).toISOString()}。`:'尚无有效读数。','','仅描述实际采样时段；模型ECMWF，起报批次未核验。雨量为原累计周期，云量为百分比。','', '|目的地|日期|雨量范围 mm|雪量范围 cm|云量范围 %|样本数|缺口|','|---|---|---|---|---|---|---|'];
+ const lines=['# Windy 查询进度（仅已提交范围，非正式目的地推荐）','',`任务 ${state.taskId}；状态 ${state.status}。有效读数 ${summary.summary.validRows}，计划缺口 ${summary.missing.length}。`,checked.length?`实际读取时间（UTC）：${new Date(Math.min(...checked)).toISOString()} 至 ${new Date(Math.max(...checked)).toISOString()}。`:'尚无有效读数。','','目的地推荐须另外通过recommendation.cjs的完整候选范围校验；此处complete不代表全部候选完成。','','仅描述实际采样时段；模型ECMWF，起报批次未核验。雨量为原累计周期，云量为百分比。','', '|目的地|日期|雨量范围 mm|雪量范围 cm|云量范围 %|样本数|缺口|','|---|---|---|---|---|---|---|'];
  const show=a=>a?a.join('–'):'未取得';
  for(const d of summary.daily)lines.push(`|${names.get(d.destinationId)}|${d.date}|${show(d.rainMm)}|${show(d.snowCm)}|${show(d.cloudPct)}|${d.sampleRows}|${d.sampleRows?d.missing:'未取得'}|`);
  lines.push('','|实际选点|WGS84纬度，经度|地形海拔|定位/来源|','|---|---|---|---|');

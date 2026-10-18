@@ -6,6 +6,8 @@
 
 使用已有本地Chrome Windy页，先确认地图ECMWF。只读取公开页面；不调用隐藏天气接口。新点或角色冲突按 [locations.md](locations.md) 核验；地理缓存不等于天气缓存。
 
+**目的地推荐必须先用 [recommendation.md](recommendation.md) 的完整候选入口生成全部子任务，再逐个推进本控制器；不能自行只提交重点候选。** 本文的request.json适用于生成后的子任务或单独天气查询。`complete`、`missing:0`和本控制器的report.md都仅覆盖已提交范围，正式推荐必须另外通过候选范围校验。
+
 创建request.json，例如：
 ```json
 {"destinationIds":["d06"],"dates":["2026-10-23","2026-10-24"],"hours":[9,12,15],"shards":1,"verifyMode":"fast","displayTimeZone":"Asia/Shanghai","followup":{"hours":[18],"cloudSpan":30,"cloudMax":60}}
