@@ -1,0 +1,41 @@
+{
+  "region": "武夷山天游峰—九曲溪",
+  "coordinateSystem": "WGS84",
+  "warning": "Coordinates only; obtain fresh weather every query. Point DEM elevations are not summit heights. Windy detail altitude has shown stale values after point changes.",
+  "terrainSource": {
+    "url": "https://api.opentopodata.org/v1/srtm30m",
+    "dataset": "SRTM30m",
+    "note": "Approximate ground elevation at point, not surveyed summit; lake/park geometry centroids can differ from visitor access areas."
+  },
+  "points": [
+    {
+      "id": "d06p1",
+      "destination": "武夷山",
+      "label": "天游峰附近",
+      "lat": 27.65545918936617,
+      "lon": 117.94846763229327,
+      "timeZone": "Asia/Shanghai",
+      "terrainElevationM": 399.0,
+      "landmarkElevationM": 408.8,
+      "geoSource": "Windy topographic peak marker 408m; original visually checked point",
+      "coordinateSystem": "WGS84",
+      "verification": "Named geographic source, WGS84 coordinates, independent SRTM terrain check",
+      "verifiedAt": "2026-10-17T16:29:19.921Z",
+      "destinationId": "d06"
+    },
+    {
+      "id": "d06p2",
+      "destination": "武夷山",
+      "label": "九曲溪附近",
+      "lat": 27.654546886312502,
+      "lon": 117.94331779098411,
+      "timeZone": "Asia/Shanghai",
+      "terrainElevationM": 197.0,
+      "geoSource": "Windy topographic Jiuqu creek point; original visually checked point",
+      "coordinateSystem": "WGS84",
+      "verification": "Named geographic source, WGS84 coordinates, independent SRTM terrain check",
+      "verifiedAt": "2026-10-17T16:29:19.921Z",
+      "destinationId": "d06"
+    }
+  ]
+}

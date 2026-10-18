@@ -1,0 +1,4 @@
+interface:
+  display_name: "Windy 景区天气批查"
+  short_description: "复用景区坐标，低频分批核验 Windy 降水云量，并输出精简结果"
+  default_prompt: "使用 $windy-query 查询指定景区日期的降水与云量趋势，并核对山顶山脚点位。"

@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict');
+const {localISO,makePlan}=require('./make-plan.cjs');
+assert.equal(localISO('2026-10-23',9,'Asia/Shanghai'),'2026-10-23T01:00:00.000Z');
+assert.equal(localISO('2026-10-23',9,'Asia/Seoul'),'2026-10-23T00:00:00.000Z');
+assert.equal(localISO('2026-10-23',9,'Asia/Almaty'),'2026-10-23T04:00:00.000Z');
+assert.equal(localISO('2026-10-23',9,'Asia/Bangkok'),'2026-10-23T02:00:00.000Z');
+assert.equal(localISO('2026-10-23',9,'Indian/Maldives'),'2026-10-23T04:00:00.000Z');
+assert.throws(()=>localISO('2026-02-30',9,'Asia/Shanghai'));
+assert.throws(()=>localISO('2026-10-23',25,'Asia/Shanghai'));
+assert.throws(()=>localISO('2026-10-23',9,'Unknown/Place'));
+assert.throws(()=>localISO('2026-03-08',2,'America/New_York'));
+const atlas={points:[{id:'p',destinationId:'d',timeZone:'Asia/Shanghai'},{id:'q',destinationId:'d',timeZone:'Asia/Seoul'}],unresolved:[{id:'gap',destinationId:'d'}]};
+const r=makePlan(atlas,{destinationIds:['d'],dates:['2026-10-23','2026-10-25'],hours:[9,12,15],shards:2},Date.parse('2026-10-18T00:00:00+08:00'));
+assert.equal(r.coverage.samples,12);assert.equal(r.configs.length,2);assert.equal(r.excluded.length,6);assert.equal(r.unresolved.length,1);
+assert.throws(()=>makePlan(atlas,{pointIds:['missing'],dates:['2026-10-23']}));
+assert.throws(()=>makePlan(atlas,{dates:['2026-10-23']}));
+console.log('PASS: five destination timezones, invalid dates/DST gaps, explicit selection, 168h split, shards and unresolved coverage.');

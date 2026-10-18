@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+let now=Date.parse('2026-10-18T00:00:00+08:00');
+class ClockDate extends Date{constructor(...args){super(...(args.length?args:[now]));}static now(){return now;}}
+const point=(id,time)=>({id,lat:27.65,lon:117.94,verifiedAt:'2026-10-18',verification:'named map and independent terrain',terrainElevationM:399,times:[time]});
+const c={Date:ClockDate,setTimeout,clearTimeout,Intl,performance,location:{hostname:'www.windy.com'},document:{querySelector:s=>s==='.box-text'?{}:null},W:{store:{get:k=>k==='product'?'ecmwf':undefined,set(){}},map:{map:{latLngToContainerPoint(){},setView(){}}}}};
+vm.runInNewContext(fs.readFileSync(require.resolve('./windy-batch.js'),'utf8'),c);
+c.WindyQuery.init({points:[point('a','2026-10-19T00:00:00+08:00'),point('b','2026-10-21T00:00:00+08:00')]});
+const checkpoint=JSON.parse(JSON.stringify(c.WindyQuery.checkpoint()));
+checkpoint.rows=checkpoint.jobs.slice(0,2).map(j=>({point:j.point.id,time:j.iso,overlay:j.overlay,status:'ok',value:0,unit:j.overlay==='rain'?'mm':'%',model:'ecmwf',...(j.overlay==='rain'?{periodHours:3}:{})}));
+now=Date.parse('2026-10-20T00:00:00+08:00');
+assert.equal(c.WindyQuery.restore(checkpoint).done,2);
+assert.equal(c.WindyQuery.status().total,4);
+assert.equal(c.WindyQuery.appendPoints([checkpoint.configuration.points[0]]).total,4);
+assert.throws(()=>c.WindyQuery.appendPoints([{...checkpoint.configuration.points[0],lat:28}]));
+const corrupt=JSON.parse(JSON.stringify(checkpoint));corrupt.jobs[0].point.lat=40;
+assert.throws(()=>c.WindyQuery.restore(corrupt));
+const wrong=JSON.parse(JSON.stringify(checkpoint));wrong.rows[0].point='other';
+assert.throws(()=>c.WindyQuery.restore(wrong));
+now=Date.parse('2026-10-22T00:00:00+08:00');
+assert.throws(()=>c.WindyQuery.restore(checkpoint));
+console.log('PASS: completed past slots restore, unfinished stale slots reject, job/row tampering rejects, duplicate append no-op, conflicting coordinates reject.');
